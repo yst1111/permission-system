@@ -48,8 +48,8 @@ request.interceptors.response.use(
       data: data
     })
     
-    // 如果响应成功但业务状态失败
-    if (data.code && data.code !== 200) {
+    // 如果响应成功但业务状态失败，且不是跳过拦截器的请求
+    if (data.code && data.code !== 200 && !response.config.skipInterceptor) {
       ElMessage.error(data.message || '请求失败')
       return Promise.reject(new Error(data.message || '请求失败'))
     }

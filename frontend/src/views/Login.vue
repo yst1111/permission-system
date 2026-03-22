@@ -91,18 +91,20 @@ const handleLogin = async () => {
       const response = await request.post('/api/user/login', {
         username: loginForm.username,
         password: loginForm.password
-      })
+      }, { skipInterceptor: true }) // 跳过拦截器，手动处理
       
-      if (response.code === 200 || response.code === 0) {
+      const data = response.data
+      
+      if (data.code === 200) {
         ElMessage.success('登录成功')
         localStorage.setItem('token', 'mock-token')
         localStorage.setItem('userInfo', JSON.stringify({
           username: loginForm.username,
-          nickname: response.data?.nickname || loginForm.username
+          nickname: data.data?.nickname || loginForm.username
         }))
         router.push('/dashboard')
       } else {
-        ElMessage.error(response.message || '用户名或密码错误')
+        ElMessage.error(data.message || '用户名或密码错误')
       }
     } catch (error) {
       // 如果后端登录失败，尝试本地模拟登录（兼容模式）
@@ -113,6 +115,14 @@ const handleLogin = async () => {
         localStorage.setItem('userInfo', JSON.stringify({
           username: 'admin',
           nickname: '系统管理员'
+        }))
+        router.push('/dashboard')
+      } else if (loginForm.username === 'user1' && loginForm.password === '123456') {
+        ElMessage.success('登录成功')
+        localStorage.setItem('token', 'mock-token')
+        localStorage.setItem('userInfo', JSON.stringify({
+          username: 'user1',
+          nickname: '普通用户'
         }))
         router.push('/dashboard')
       } else {
