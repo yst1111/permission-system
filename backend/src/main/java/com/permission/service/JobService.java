@@ -1,6 +1,7 @@
 package com.permission.service;
 
 import com.permission.entity.Job;
+import com.permission.job.GeneralJob;
 import com.permission.mapper.JobMapper;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
