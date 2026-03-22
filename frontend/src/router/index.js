@@ -99,7 +99,7 @@ const routes = [
             name: 'Job',
             component: () => import('@/views/system/Job.vue'),
             meta: {
-              title: '定时任务管理',
+              title: '定时任务列表',
               requiresAuth: true
             }
           }
