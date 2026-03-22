@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>权限管理系统</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+        .logo {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .nav-link {
+            display: block;
+            padding: 15px 25px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+        .nav-link:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .api-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .api-info h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        .api-info p {
+            color: #666;
+            margin: 5px 0;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #28a745;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🔐 权限管理系统</div>
+        <div class="subtitle">Permission Management System</div>
+        
+        <div class="nav-links">
+            <a href="/swagger-ui.html" class="nav-link">📚 API文档 (Swagger UI)</a>
+            <a href="/api/test/health" class="nav-link">💚 健康检查</a>
+            <a href="/api/test/hello" class="nav-link">👋 测试接口</a>
+            <a href="/api/user/list" class="nav-link">👥 用户管理</a>
+            <a href="/api/region/list" class="nav-link">🌍 地区管理</a>
+        </div>
+        
+        <div class="api-info">
+            <h3>📋 系统信息</h3>
+            <p><strong>服务地址:</strong> http://localhost:8080</p>
+            <p><strong>API文档:</strong> http://localhost:8080/swagger-ui.html</p>
+            <p><strong>健康检查:</strong> http://localhost:8080/api/test/health</p>
+            <div class="status">✅ 系统运行正常</div>
+        </div>
+    </div>
+</body>
+</html> 

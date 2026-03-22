@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试展开按钮</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/element-plus/dist/index.full.js"></script>
+</head>
+<body>
+    <div id="app">
+        <el-card>
+            <h3>测试Element Plus树形表格展开按钮</h3>
+            
+            <el-table
+                :data="tableData"
+                row-key="id"
+                :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+                border
+                style="width: 100%"
+                @expand-change="handleExpand"
+            >
+                <el-table-column prop="name" label="名称" width="200">
+                    <template #default="scope">
+                        <span>{{ scope.row.name }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="level" label="级别" width="100" />
+                <el-table-column prop="hasChildren" label="有子节点" width="100">
+                    <template #default="scope">
+                        <span>{{ scope.row.hasChildren ? '是' : '否' }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="children" label="子节点数量" width="100">
+                    <template #default="scope">
+                        <span>{{ scope.row.children ? scope.row.children.length : 0 }}</span>
+                    </template>
+                </el-table-column>
+            </el-table>
+            
+            <div style="margin-top: 20px;">
+                <h4>当前数据状态：</h4>
+                <pre>{{ JSON.stringify(tableData, null, 2) }}</pre>
+            </div>
+        </el-card>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue;
+        const { ElCard, ElTable, ElTableColumn, ElButton } = ElementPlus;
+
+        createApp({
+            components: {
+                ElCard,
+                ElTable,
+                ElTableColumn,
+                ElButton
+            },
+            setup() {
+                const tableData = ref([
+                    {
+                        id: 1,
+                        name: '北京市',
+                        level: 1,
+                        hasChildren: true,
+                        children: []
+                    },
+                    {
+                        id: 2,
+                        name: '天津市',
+                        level: 1,
+                        hasChildren: true,
+                        children: []
+                    },
+                    {
+                        id: 3,
+                        name: '河北省',
+                        level: 1,
+                        hasChildren: true,
+                        children: []
+                    }
+                ]);
+
+                const handleExpand = (row, expanded) => {
+                    console.log('展开事件:', row, expanded);
+                    
+                    if (expanded && (!row.children || row.children.length === 0)) {
+                        // 模拟加载子节点
+                        setTimeout(() => {
+                            if (row.id === 1) {
+                                row.children = [
+                                    { id: 11, name: '东城区', level: 2, hasChildren: false, children: [] },
+                                    { id: 12, name: '西城区', level: 2, hasChildren: false, children: [] },
+                                    { id: 13, name: '朝阳区', level: 2, hasChildren: false, children: [] }
+                                ];
+                            } else if (row.id === 2) {
+                                row.children = [
+                                    { id: 21, name: '和平区', level: 2, hasChildren: false, children: [] },
+                                    { id: 22, name: '河东区', level: 2, hasChildren: false, children: [] }
+                                ];
+                            } else if (row.id === 3) {
+                                row.children = [
+                                    { id: 31, name: '石家庄市', level: 2, hasChildren: true, children: [] },
+                                    { id: 32, name: '唐山市', level: 2, hasChildren: true, children: [] }
+                                ];
+                            }
+                        }, 500);
+                    }
+                };
+
+                return {
+                    tableData,
+                    handleExpand
+                };
+            }
+        }).use(ElementPlus).mount('#app');
+    </script>
+</body>
+</html> 

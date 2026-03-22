@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.permission.mapper.RoleMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.permission.entity.Role">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="role_name" property="roleName" jdbcType="VARCHAR"/>
+        <result column="role_code" property="roleCode" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="sort_order" property="sortOrder" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        id, role_name, role_code, description, status, sort_order, create_time, update_time
+    </sql>
+
+    <!-- 查询角色列表 -->
+    <select id="selectRoleList" parameterType="com.permission.entity.Role" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_role
+        <where>
+            <if test="roleName != null and roleName != ''">
+                AND role_name LIKE CONCAT('%', #{roleName}, '%')
+            </if>
+            <if test="roleCode != null and roleCode != ''">
+                AND role_code LIKE CONCAT('%', #{roleCode}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY sort_order ASC, id ASC
+    </select>
+
+    <!-- 根据ID查询角色 -->
+    <select id="selectRoleById" parameterType="Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_role
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据角色编码查询角色 -->
+    <select id="selectRoleByCode" parameterType="String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_role
+        WHERE role_code = #{roleCode}
+    </select>
+
+    <!-- 新增角色 -->
+    <insert id="insertRole" parameterType="com.permission.entity.Role" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_role (
+            role_name, role_code, description, status, sort_order
+        ) VALUES (
+            #{roleName}, #{roleCode}, #{description}, #{status}, #{sortOrder}
+        )
+    </insert>
+
+    <!-- 更新角色 -->
+    <update id="updateRole" parameterType="com.permission.entity.Role">
+        UPDATE sys_role
+        <set>
+            <if test="roleName != null">role_name = #{roleName},</if>
+            <if test="roleCode != null">role_code = #{roleCode},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除角色 -->
+    <delete id="deleteRoleById" parameterType="Long">
+        DELETE FROM sys_role WHERE id = #{id}
+    </delete>
+
+    <!-- 批量删除角色 -->
+    <delete id="batchDeleteRoles" parameterType="java.util.List">
+        DELETE FROM sys_role WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 查询角色关联的菜单ID -->
+    <select id="selectMenuIdsByRoleId" parameterType="Long" resultType="Long">
+        SELECT menu_id FROM sys_role_menu WHERE role_id = #{roleId}
+    </select>
+
+    <!-- 分配菜单权限 -->
+    <insert id="insertRoleMenu">
+        INSERT INTO sys_role_menu (role_id, menu_id) VALUES
+        <foreach collection="menuIds" item="menuId" separator=",">
+            (#{roleId}, #{menuId})
+        </foreach>
+    </insert>
+
+    <!-- 删除角色菜单权限 -->
+    <delete id="deleteRoleMenuByRoleId" parameterType="Long">
+        DELETE FROM sys_role_menu WHERE role_id = #{roleId}
+    </delete>
+
+</mapper>

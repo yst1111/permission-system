@@ -1,0 +1,24 @@
+# Maven
+backend/target/
+backend/*.iml
+.idea/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+*.class
+*.jar
+*.war
+
+# Logs
+logs/
+*.log

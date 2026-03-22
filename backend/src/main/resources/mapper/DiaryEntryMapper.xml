@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.permission.mapper.DiaryEntryMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.permission.entity.DiaryEntry">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="entry_date" property="entryDate" jdbcType="DATE"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="LONGVARCHAR"/>
+        <result column="mood" property="mood" jdbcType="VARCHAR"/>
+        <result column="weather" property="weather" jdbcType="VARCHAR"/>
+        <result column="location" property="location" jdbcType="VARCHAR"/>
+        <result column="tags" property="tags" jdbcType="VARCHAR"/>
+        <result column="is_private" property="isPrivate" jdbcType="BOOLEAN"/>
+        <result column="is_favorite" property="isFavorite" jdbcType="BOOLEAN"/>
+        <result column="word_count" property="wordCount" jdbcType="INTEGER"/>
+        <result column="reading_time" property="readingTime" jdbcType="INTEGER"/>
+        <result column="created_time" property="createdTime" jdbcType="TIMESTAMP"/>
+        <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        id, user_id, entry_date, title, content, mood, weather, location, tags, 
+        is_private, is_favorite, word_count, reading_time, created_time, updated_time
+    </sql>
+
+    <!-- 插入日记记录 -->
+    <insert id="insert" parameterType="com.permission.entity.DiaryEntry" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO diary_entries (
+            user_id, entry_date, title, content, mood, weather, location, tags,
+            is_private, is_favorite, word_count, reading_time, created_time, updated_time
+        ) VALUES (
+            #{userId}, #{entryDate}, #{title}, #{content}, #{mood}, #{weather}, #{location}, #{tags},
+            #{isPrivate}, #{isFavorite}, #{wordCount}, #{readingTime}, #{createdTime}, #{updatedTime}
+        )
+    </insert>
+
+    <!-- 根据ID更新日记记录 -->
+    <update id="updateById" parameterType="com.permission.entity.DiaryEntry">
+        UPDATE diary_entries
+        <set>
+            <if test="entryDate != null">entry_date = #{entryDate},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="mood != null">mood = #{mood},</if>
+            <if test="weather != null">weather = #{weather},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="tags != null">tags = #{tags},</if>
+            <if test="isPrivate != null">is_private = #{isPrivate},</if>
+            <if test="isFavorite != null">is_favorite = #{isFavorite},</if>
+            <if test="wordCount != null">word_count = #{wordCount},</if>
+            <if test="readingTime != null">reading_time = #{readingTime},</if>
+            <if test="updatedTime != null">updated_time = #{updatedTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据ID删除日记记录 -->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM diary_entries WHERE id = #{id}
+    </delete>
+
+    <!-- 根据ID查询日记记录 -->
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM diary_entries
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据用户ID查询日记记录列表 -->
+    <select id="selectByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM diary_entries
+        WHERE user_id = #{userId}
+        ORDER BY entry_date DESC, created_time DESC
+    </select>
+
+    <!-- 根据用户ID和日期查询日记记录 -->
+    <select id="selectByUserIdAndDate" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM diary_entries
+        WHERE user_id = #{userId} AND entry_date = #{entryDate}
+        LIMIT 1
+    </select>
+
+    <!-- 根据用户ID和日期范围查询日记记录列表 -->
+    <select id="selectByUserIdAndDateRange" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM diary_entries
+        WHERE user_id = #{userId} 
+        AND entry_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY entry_date DESC, created_time DESC
+    </select>
+
+    <!-- 根据用户ID和心情状态查询日记记录列表 -->
+    <select id="selectByUserIdAndMood" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM diary_entries
+        WHERE user_id = #{userId} AND mood = #{mood}
+        ORDER BY entry_date DESC, created_time DESC
+    </select>
+
+    <!-- 根据用户ID和关键词搜索日记记录 -->
+    <select id="searchByUserIdAndKeyword" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM diary_entries
+        WHERE user_id = #{userId}
+        AND (
+            title LIKE CONCAT('%', #{keyword}, '%')
+            OR content LIKE CONCAT('%', #{keyword}, '%')
+            OR tags LIKE CONCAT('%', #{keyword}, '%')
+        )
+        ORDER BY entry_date DESC, created_time DESC
+    </select>
+
+    <!-- 根据用户ID查询收藏的日记记录 -->
+    <select id="selectFavoritesByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM diary_entries
+        WHERE user_id = #{userId} AND is_favorite = true
+        ORDER BY entry_date DESC, created_time DESC
+    </select>
+
+    <!-- 统计用户日记数据 -->
+    <select id="selectDiaryStatistics" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM diary_entries
+        WHERE user_id = #{userId}
+        <if test="year != null and month != null">
+            AND YEAR(entry_date) = #{year} AND MONTH(entry_date) = #{month}
+        </if>
+        ORDER BY entry_date DESC
+    </select>
+
+</mapper> 

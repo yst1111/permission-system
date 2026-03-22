@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.permission.mapper.MenuMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.permission.entity.Menu">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="parent_id" property="parentId" jdbcType="BIGINT"/>
+        <result column="menu_name" property="menuName" jdbcType="VARCHAR"/>
+        <result column="menu_code" property="menuCode" jdbcType="VARCHAR"/>
+        <result column="path" property="menuPath" jdbcType="VARCHAR"/>
+        <result column="component" property="component" jdbcType="VARCHAR"/>
+        <result column="icon" property="menuIcon" jdbcType="VARCHAR"/>
+        <result column="permission" property="permission" jdbcType="VARCHAR"/>
+        <result column="menu_type" property="menuType" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="sort_order" property="sortOrder" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        id, parent_id, menu_name, menu_code, path, component, icon, permission, menu_type, status, sort_order, create_time, update_time
+    </sql>
+
+    <!-- 查询菜单列表 -->
+    <select id="selectMenuList" parameterType="com.permission.entity.Menu" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_menu
+        <where>
+            <if test="menuName != null and menuName != ''">
+                AND menu_name LIKE CONCAT('%', #{menuName}, '%')
+            </if>
+            <if test="menuCode != null and menuCode != ''">
+                AND menu_code LIKE CONCAT('%', #{menuCode}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="menuType != null">
+                AND menu_type = #{menuType}
+            </if>
+        </where>
+        ORDER BY sort_order ASC, id ASC
+    </select>
+
+    <!-- 查询菜单树（返回所有菜单，前端处理树形结构） -->
+    <select id="selectMenuTree" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_menu
+        ORDER BY parent_id ASC, sort_order ASC, id ASC
+    </select>
+
+    <!-- 根据ID查询菜单 -->
+    <select id="selectMenuById" parameterType="Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_menu
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据菜单编码查询菜单 -->
+    <select id="selectMenuByCode" parameterType="String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_menu
+        WHERE menu_code = #{menuCode}
+    </select>
+
+    <!-- 根据父ID查询子菜单 -->
+    <select id="selectChildrenByParentId" parameterType="Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_menu
+        WHERE parent_id = #{parentId}
+        ORDER BY sort_order ASC, id ASC
+    </select>
+
+    <!-- 新增菜单 -->
+    <insert id="insertMenu" parameterType="com.permission.entity.Menu" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_menu (
+            parent_id, menu_name, menu_code, path, component, icon, permission, menu_type, status, sort_order
+        ) VALUES (
+            #{parentId}, #{menuName}, #{menuCode}, #{menuPath}, #{component}, #{menuIcon}, #{permission}, #{menuType}, #{status}, #{sortOrder}
+        )
+    </insert>
+
+    <!-- 更新菜单 -->
+    <update id="updateMenu" parameterType="com.permission.entity.Menu">
+        UPDATE sys_menu
+        <set>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="menuName != null">menu_name = #{menuName},</if>
+            <if test="menuCode != null">menu_code = #{menuCode},</if>
+            <if test="menuPath != null">path = #{menuPath},</if>
+            <if test="component != null">component = #{component},</if>
+            <if test="menuIcon != null">icon = #{menuIcon},</if>
+            <if test="permission != null">permission = #{permission},</if>
+            <if test="menuType != null">menu_type = #{menuType},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除菜单 -->
+    <delete id="deleteMenuById" parameterType="Long">
+        DELETE FROM sys_menu WHERE id = #{id}
+    </delete>
+
+    <!-- 批量删除菜单 -->
+    <delete id="batchDeleteMenus" parameterType="java.util.List">
+        DELETE FROM sys_menu WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

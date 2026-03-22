@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.permission.mapper.RegionMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.permission.entity.Region">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="parent_code" property="parentCode" jdbcType="VARCHAR"/>
+        <result column="region_name" property="regionName" jdbcType="VARCHAR"/>
+        <result column="region_code" property="regionCode" jdbcType="VARCHAR"/>
+        <result column="level" property="level" jdbcType="TINYINT"/>
+        <result column="sort_order" property="sortOrder" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        id, parent_code, region_name, region_code, level, sort_order, status, create_time, update_time
+    </sql>
+
+    <!-- 查询地区列表 -->
+    <select id="selectRegionList" parameterType="com.permission.entity.Region" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_region
+        <where>
+            <if test="regionName != null and regionName != ''">
+                AND region_name LIKE CONCAT('%', #{regionName}, '%')
+            </if>
+            <if test="regionCode != null and regionCode != ''">
+                AND region_code LIKE CONCAT('%', #{regionCode}, '%')
+            </if>
+            <if test="level != null">
+                AND level = #{level}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="parentCode != null and parentCode != ''">
+                AND parent_code = #{parentCode}
+            </if>
+        </where>
+        ORDER BY sort_order ASC, create_time DESC
+    </select>
+
+    <!-- 根据ID查询地区 -->
+    <select id="selectRegionById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_region
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据父级编码查询子地区 -->
+    <select id="selectRegionByParentCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_region
+        WHERE parent_code = #{parentCode}
+        ORDER BY sort_order ASC, create_time DESC
+    </select>
+
+    <!-- 查询地区树形结构 -->
+    <select id="selectRegionTree" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_region
+        ORDER BY sort_order ASC, create_time DESC
+    </select>
+
+    <!-- 新增地区 -->
+    <insert id="insertRegion" parameterType="com.permission.entity.Region" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_region (
+            parent_code, region_name, region_code, level, sort_order, status, create_time, update_time
+        ) VALUES (
+            #{parentCode}, #{regionName}, #{regionCode}, #{level}, #{sortOrder}, #{status}, #{createTime}, #{updateTime}
+        )
+    </insert>
+
+    <!-- 修改地区 -->
+    <update id="updateRegion" parameterType="com.permission.entity.Region">
+        UPDATE sys_region
+        <set>
+            <if test="parentCode != null">parent_code = #{parentCode},</if>
+            <if test="regionName != null">region_name = #{regionName},</if>
+            <if test="regionCode != null">region_code = #{regionCode},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除地区 -->
+    <delete id="deleteRegionById" parameterType="java.lang.Long">
+        DELETE FROM sys_region WHERE id = #{id}
+    </delete>
+
+    <!-- 检查地区编码是否存在 -->
+    <select id="checkRegionCodeExists" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM sys_region
+        WHERE region_code = #{regionCode}
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+    </select>
+
+    <!-- 检查是否有子地区 -->
+    <select id="checkHasChildren" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM sys_region
+        WHERE parent_code = (
+            SELECT region_code FROM sys_region WHERE id = #{id}
+        )
+    </select>
+
+</mapper> 
