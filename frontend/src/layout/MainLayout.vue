@@ -147,7 +147,9 @@ const isCollapse = ref(false)
 const userInfo = ref({})
 const userAvatar = ref('')
 const isGeneralUser = computed(() => {
-  return userInfo.value.username && userInfo.value.username !== 'admin'
+  const isGeneral = userInfo.value.username && userInfo.value.username !== 'admin'
+  console.log('userInfo:', userInfo.value, 'isGeneralUser:', isGeneral)
+  return isGeneral
 })
 
 // 计算当前激活的菜单
