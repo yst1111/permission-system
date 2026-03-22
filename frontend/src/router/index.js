@@ -32,6 +32,15 @@ const routes = [
         }
       },
       {
+        path: 'job',
+        name: 'Job',
+        component: () => import('@/views/system/Job.vue'),
+        meta: {
+          title: '定时任务列表',
+          requiresAuth: true
+        }
+      },
+      {
         path: 'reading-notes',
         name: 'ReadingNotes',
         component: () => import('@/views/ReadingNotes.vue'),
