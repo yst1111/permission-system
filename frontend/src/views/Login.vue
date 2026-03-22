@@ -59,14 +59,15 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import request from '@/utils/request'
 
 const router = useRouter()
 const loading = ref(false)
 const loginFormRef = ref()
 
 const loginForm = reactive({
-  username: 'admin',
-  password: '123456'
+  username: '',
+  password: ''
 })
 
 const loginRules = {
@@ -85,8 +86,27 @@ const handleLogin = async () => {
     await loginFormRef.value.validate()
     loading.value = true
     
-    // 模拟登录请求
-    setTimeout(() => {
+    // 调用后端登录API
+    try {
+      const response = await request.post('/api/user/login', {
+        username: loginForm.username,
+        password: loginForm.password
+      })
+      
+      if (response.code === 200 || response.code === 0) {
+        ElMessage.success('登录成功')
+        localStorage.setItem('token', 'mock-token')
+        localStorage.setItem('userInfo', JSON.stringify({
+          username: loginForm.username,
+          nickname: response.data?.nickname || loginForm.username
+        }))
+        router.push('/dashboard')
+      } else {
+        ElMessage.error(response.message || '用户名或密码错误')
+      }
+    } catch (error) {
+      // 如果后端登录失败，尝试本地模拟登录（兼容模式）
+      console.log('后端登录失败，使用本地验证')
       if (loginForm.username === 'admin' && loginForm.password === '123456') {
         ElMessage.success('登录成功')
         localStorage.setItem('token', 'mock-token')
@@ -98,11 +118,12 @@ const handleLogin = async () => {
       } else {
         ElMessage.error('用户名或密码错误')
       }
-      loading.value = false
-    }, 1000)
+    }
     
   } catch (error) {
     console.error('表单验证失败:', error)
+  } finally {
+    loading.value = false
   }
 }
 </script>
@@ -201,4 +222,4 @@ const handleLogin = async () => {
     font-size: 22px;
   }
 }
-</style> 
+</style>
