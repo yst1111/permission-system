@@ -19,6 +19,7 @@
         text-color="#bfcbd9"
         active-text-color="#409EFF"
       >
+        <!-- 通用菜单：所有人都能看到 -->
         <el-menu-item index="/dashboard">
           <el-icon><Monitor /></el-icon>
           <template #title>仪表板</template>
@@ -34,7 +35,8 @@
           <template #title>我的日记</template>
         </el-menu-item>
         
-        <el-sub-menu index="/life">
+        <!-- 一般用户只显示生活管理 -->
+        <el-sub-menu v-if="isGeneralUser" index="/life">
           <template #title>
             <el-icon><Coin /></el-icon>
             <span>生活管理</span>
@@ -42,21 +44,31 @@
           <el-menu-item index="/system/meal-card">饭卡管理</el-menu-item>
         </el-sub-menu>
         
-        <el-sub-menu index="/system">
-          <template #title>
-            <el-icon><Setting /></el-icon>
-            <span>系统管理</span>
-          </template>
-          <el-menu-item index="/system/user">用户管理</el-menu-item>
-          <el-menu-item index="/system/role">角色管理</el-menu-item>
-          <el-menu-item index="/system/menu">菜单管理</el-menu-item>
-          <el-menu-item index="/system/meal-card">饭卡管理</el-menu-item>
-        </el-sub-menu>
-        
-        <el-menu-item index="/region">
-          <el-icon><Location /></el-icon>
-          <template #title>地区管理</template>
-        </el-menu-item>
+        <!-- 管理员显示所有菜单 -->
+        <template v-if="!isGeneralUser">
+          <el-sub-menu index="/life">
+            <template #title>
+              <el-icon><Coin /></el-icon>
+              <span>生活管理</span>
+            </template>
+            <el-menu-item index="/system/meal-card">饭卡管理</el-menu-item>
+          </el-sub-menu>
+          
+          <el-sub-menu index="/system">
+            <template #title>
+              <el-icon><Setting /></el-icon>
+              <span>系统管理</span>
+            </template>
+            <el-menu-item index="/system/user">用户管理</el-menu-item>
+            <el-menu-item index="/system/role">角色管理</el-menu-item>
+            <el-menu-item index="/system/menu">菜单管理</el-menu-item>
+          </el-sub-menu>
+          
+          <el-menu-item index="/region">
+            <el-icon><Location /></el-icon>
+            <template #title>地区管理</template>
+          </el-menu-item>
+        </template>
       </el-menu>
     </el-aside>
 
@@ -113,7 +125,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ElMessageBox } from 'element-plus'
+import { ElMessageBox, ElMessage } from 'element-plus'
+import request from '@/utils/request'
 import {
   Monitor,
   Setting,
@@ -132,6 +145,9 @@ const route = useRoute()
 const isCollapse = ref(false)
 const userInfo = ref({})
 const userAvatar = ref('')
+const isGeneralUser = computed(() => {
+  return userInfo.value.username && userInfo.value.username !== 'admin'
+})
 
 // 计算当前激活的菜单
 const activeMenu = computed(() => route.path)
@@ -144,6 +160,11 @@ const breadcrumbs = computed(() => {
     path: item.path
   }))
 })
+
+// 获取用户菜单（暂时保留，未使用）
+const fetchMenus = async () => {
+  // 暂时使用本地判断
+}
 
 // 切换侧边栏
 const toggleCollapse = () => {
@@ -178,6 +199,7 @@ onMounted(() => {
   if (storedUserInfo) {
     userInfo.value = JSON.parse(storedUserInfo)
   }
+  fetchMenus()
 })
 </script>
 
