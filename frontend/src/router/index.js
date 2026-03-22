@@ -93,6 +93,15 @@ const routes = [
               title: '饭卡管理',
               requiresAuth: true
             }
+          },
+          {
+            path: 'job',
+            name: 'Job',
+            component: () => import('@/views/system/Job.vue'),
+            meta: {
+              title: '定时任务管理',
+              requiresAuth: true
+            }
           }
         ]
       },

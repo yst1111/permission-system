@@ -58,6 +58,14 @@
             <el-icon><Location /></el-icon>
             <template #title>地区管理</template>
           </el-menu-item>
+          
+          <el-sub-menu index="/job">
+            <template #title>
+              <el-icon><Timer /></el-icon>
+              <span>定时任务管理</span>
+            </template>
+            <el-menu-item index="/job/list">定时任务列表</el-menu-item>
+          </el-sub-menu>
         </template>
         
         <!-- 一般用户只显示生活管理 -->
@@ -137,7 +145,8 @@ import {
   ArrowDown,
   Reading,
   EditPen,
-  Coin
+  Coin,
+  Timer
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
