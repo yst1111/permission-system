@@ -15,6 +15,17 @@ spring:
     init:
       mode: never
 
+  # Quartz配置
+  quartz:
+    job-store-type: memory
+    properties:
+      org:
+        quartz:
+          threadPool:
+            threadCount: 10
+          jobStore:
+            class: org.quartz.simpl.RAMJobStore
+  
   security:
     user:
       name: admin
