@@ -19,33 +19,23 @@
         text-color="#bfcbd9"
         active-text-color="#409EFF"
       >
-        <!-- 通用菜单：所有人都能看到 -->
-        <el-menu-item index="/dashboard">
-          <el-icon><Monitor /></el-icon>
-          <template #title>仪表板</template>
-        </el-menu-item>
-        
-        <el-menu-item index="/reading-notes">
-          <el-icon><Reading /></el-icon>
-          <template #title>读书笔记</template>
-        </el-menu-item>
-        
-        <el-menu-item index="/diary">
-          <el-icon><EditPen /></el-icon>
-          <template #title>我的日记</template>
-        </el-menu-item>
-        
-        <!-- 一般用户只显示生活管理 -->
-        <el-sub-menu v-if="isGeneralUser" index="/life">
-          <template #title>
-            <el-icon><Coin /></el-icon>
-            <span>生活管理</span>
-          </template>
-          <el-menu-item index="/system/meal-card">饭卡管理</el-menu-item>
-        </el-sub-menu>
-        
         <!-- 管理员显示所有菜单 -->
         <template v-if="!isGeneralUser">
+          <el-menu-item index="/dashboard">
+            <el-icon><Monitor /></el-icon>
+            <template #title>仪表板</template>
+          </el-menu-item>
+          
+          <el-menu-item index="/reading-notes">
+            <el-icon><Reading /></el-icon>
+            <template #title>读书笔记</template>
+          </el-menu-item>
+          
+          <el-menu-item index="/diary">
+            <el-icon><EditPen /></el-icon>
+            <template #title>我的日记</template>
+          </el-menu-item>
+          
           <el-sub-menu index="/life">
             <template #title>
               <el-icon><Coin /></el-icon>
@@ -68,6 +58,17 @@
             <el-icon><Location /></el-icon>
             <template #title>地区管理</template>
           </el-menu-item>
+        </template>
+        
+        <!-- 一般用户只显示生活管理 -->
+        <template v-if="isGeneralUser">
+          <el-sub-menu index="/life">
+            <template #title>
+              <el-icon><Coin /></el-icon>
+              <span>生活管理</span>
+            </template>
+            <el-menu-item index="/system/meal-card">饭卡管理</el-menu-item>
+          </el-sub-menu>
         </template>
       </el-menu>
     </el-aside>
