@@ -65,6 +65,7 @@
               <span>定时任务管理</span>
             </template>
             <el-menu-item index="/job">定时任务列表</el-menu-item>
+            <el-menu-item index="/job-log">执行记录</el-menu-item>
           </el-sub-menu>
         </template>
         

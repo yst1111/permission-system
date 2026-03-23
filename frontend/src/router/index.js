@@ -41,6 +41,15 @@ const routes = [
         }
       },
       {
+        path: 'job-log',
+        name: 'JobLog',
+        component: () => import('@/views/system/JobLog.vue'),
+        meta: {
+          title: '执行记录',
+          requiresAuth: true
+        }
+      },
+      {
         path: 'reading-notes',
         name: 'ReadingNotes',
         component: () => import('@/views/ReadingNotes.vue'),
