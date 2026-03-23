@@ -141,7 +141,7 @@ const handleLogin = async () => {
 <style scoped>
 .login-container {
   height: 100vh;
-  background-image: url('/src/assets/images/R.jpg');
+  background-image: url('/src/assets/images/nba_login.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
